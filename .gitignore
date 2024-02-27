@@ -1,3 +1,6 @@
+storage/messages.json
+storage/registered_users.json
+
 # Logs
 logs
 *.log
