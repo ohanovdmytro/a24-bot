@@ -5,7 +5,8 @@
   "main": "src/bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon src/bot"
+    "dev": "npx nodemon src/bot",
+    "start": "node src/bot.js"
   },
   "keywords": [],
   "author": "",
