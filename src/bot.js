@@ -83,6 +83,8 @@ bot.on("message:text", async (ctx) => {
     if (isRegistered(registeredUsers, senderId)) {
       const senderNameHeader = senderName(registeredUsers, senderId);
 
+      console.log(ctx.message);
+
       registeredUsers.map(async (user) => {
         if (user.userId !== senderId) {
           await bot.api.sendMessage(
@@ -133,6 +135,8 @@ bot.on("message:photo", async (ctx) => {
 
     if (isRegistered(registeredUsers, senderId)) {
       const senderNameHeader = senderName(registeredUsers, senderId);
+
+      console.log(ctx.message);
 
       registeredUsers.map(async (user) => {
         if (user.userId !== senderId) {
