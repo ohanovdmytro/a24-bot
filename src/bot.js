@@ -1,4 +1,4 @@
-const { Bot } = require("grammy");
+const { Bot, HttpError, GrammyError } = require("grammy");
 require("dotenv").config();
 const names = require("../storage/names.json");
 const { Random } = require("random-js");
@@ -30,39 +30,48 @@ bot.command("start", async (ctx) => {
       saveRegisteredUsers(registeredUsers);
 
       const yourNameHeader = senderName(registeredUsers, newUserId);
-      ctx.reply(`You are now registered. Your name is: ${yourNameHeader}`);
+      await ctx.reply(`Ви зареєстровані, Ваше ім'я: ${yourNameHeader}`);
 
       console.log(registeredUsers);
     } else {
-      ctx.reply("You are already registered.");
+      await ctx.reply("Ви вже зареєстровані.");
     }
   } catch (error) {
     console.error("Error registering: ", error.message);
-    ctx.reply("Error occurred when registering.");
+    await ctx.reply("Error occurred when registering.");
   }
 });
 
-bot.on("message", async (ctx) => {
-  console.log(ctx.message);
+bot.on("message:text", async (ctx) => {
+  if (ctx.message.pinned_message) {
+    try {
+      const senderId = ctx.message.from.id;
+      const pinnedMessage = ctx.message.pinned_message;
+      const registeredUsers = loadRegisteredUsers();
+      // console.log(pinnedMessage.message_id - 2);
 
-  if (typeof ctx.message.pinned_message === "object") {
-    const senderId = ctx.message.from.id;
-    const pinnedMessage = ctx.message.pinned_message;
-    const registeredUsers = loadRegisteredUsers();
+      // try {
+      //   await bot.api.sendMessage(senderId, `${pinnedMessage.message_id - 2}`);
+      // } catch (error) {
+      //   console.error(error.message);
+      // }
 
-    if (isRegistered(registeredUsers, senderId)) {
-      let msgIdCounter = 0;
-      registeredUsers.map(async (user) => {
-        if (user.userId !== senderId) {
-          // await bot.api.pinChatMessage(
-          //   user.userId,
-          //   `${pinnedMessage.message_id}`
-          // );
-          await bot.api.sendMessage(user.userId, `TODO: pin message for user`);
-        }
-      });
+      if (isRegistered(registeredUsers, senderId)) {
+        let msgIdCounter = 0;
+        registeredUsers.map(async (user) => {
+          if (user.userId !== senderId) {
+            // await bot.api.pinChatMessage(
+            //   user.userId,
+            //   `${pinnedMessage.message_id}`
+            // );
+            await bot.api.sendMessage(user.userId, `TODO: пін повідомлення`);
+          }
+        });
+      }
+      return;
+    } catch (error) {
+      console.error(error.message);
     }
-    return;
   }
 
   const senderId = ctx.message.from.id;
@@ -78,15 +87,79 @@ bot.on("message", async (ctx) => {
         if (user.userId !== senderId) {
           await bot.api.sendMessage(
             user.userId,
-            `${senderNameHeader}:\n${messageText}`
+            `<b>${senderNameHeader}</b>:\n${messageText}`,
+            { parse_mode: "HTML" }
           );
         }
       });
     } else {
-      ctx.reply("You are not registered. Type /start to register.");
+      await ctx.reply(
+        "Ви не зареєстровані. Надішліть /start щоб зареєструватись."
+      );
     }
   } catch (error) {
     console.error("Error sending message: ", error.message);
+  }
+});
+
+bot.on("message:photo", async (ctx) => {
+  if (typeof ctx.message.pinned_message === "object") {
+    const senderId = ctx.message.from.id;
+    const pinnedMessage = ctx.message.pinned_message;
+    const registeredUsers = loadRegisteredUsers();
+
+    if (isRegistered(registeredUsers, senderId)) {
+      let msgIdCounter = 0;
+      registeredUsers.map(async (user) => {
+        if (user.userId !== senderId) {
+          // await bot.api.pinChatMessage(
+          //   user.userId,
+          //   `${pinnedMessage.message_id}`
+          // );
+          await bot.api.sendMessage(user.userId, `TODO: запінити фото`);
+        }
+      });
+    }
+    return;
+  }
+
+  const senderId = ctx.message.from.id;
+  const photosArray = ctx.message.photo;
+  const photo = photosArray.slice(-1);
+  const photoId = photo[0].file_id;
+
+  try {
+    const registeredUsers = loadRegisteredUsers();
+
+    if (isRegistered(registeredUsers, senderId)) {
+      const senderNameHeader = senderName(registeredUsers, senderId);
+
+      registeredUsers.map(async (user) => {
+        if (user.userId !== senderId) {
+          await bot.api.sendPhoto(user.userId, photoId, {
+            caption: `<b>${senderNameHeader}:</b>`,
+            parse_mode: "HTML",
+          });
+        }
+      });
+    } else {
+      ctx.reply("Ви не зареєстровані. Надішліть /start щоб зареєструватись.");
+    }
+  } catch (error) {
+    console.error("Error sending message: ", error.message);
+  }
+});
+
+bot.catch((err) => {
+  const ctx = err.ctx;
+  console.error(`Error while handling update ${ctx.update.update_id}:`);
+  const e = err.error;
+  if (e instanceof GrammyError) {
+    console.error("Error in request:", e.description);
+  } else if (e instanceof HttpError) {
+    console.error("Could not contact Telegram:", e);
+  } else {
+    console.error("Unknown error:", e);
   }
 });
 
