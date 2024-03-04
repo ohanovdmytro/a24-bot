@@ -5,15 +5,12 @@
   "main": "src/bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon src/bot",
-    "start": "forever start src/bot.js",
-    "stop": "forever stop src/bot.js"
+    "dev": "npx nodemon src/bot"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "grammy": "^1.21.1",
     "random-js": "^2.1.0"
