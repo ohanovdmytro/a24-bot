@@ -1,4 +1,8 @@
 storage/messages.json
+storage/names.json
+storage/registered_users.json
+
+.DS_store
 
 # Logs
 logs
