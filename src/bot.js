@@ -2,6 +2,7 @@ const { Bot } = require("grammy");
 require("dotenv").config();
 
 const { handleStart } = require("./commands/handleStart");
+const { handleAllow } = require("./commands/handleAllow");
 
 const { handleText } = require("./middleware/handleText");
 const { handlePhoto } = require("./middleware/handlePhoto");
@@ -10,13 +11,16 @@ const { handleError } = require("./helpers/handleError");
 
 const bot = new Bot(process.env.A24_TEST_BOT_TOKEN);
 
-/* Send /start command */
+/* Handle /start */
 bot.command("start", handleStart);
 
-/* Send messages */
+/* Handle /allow userId,Name command */
+bot.command("allow", handleAllow);
+
+/* Handle sent messages */
 bot.on("message:text", handleText);
 
-/* Send photos */
+/* Handle sent photo */
 bot.on("message:photo", handlePhoto);
 
 /* Handle errors */

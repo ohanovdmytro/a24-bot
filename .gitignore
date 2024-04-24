@@ -1,6 +1,7 @@
 storage/messages.json
 storage/names.json
 storage/registered_users.json
+storage/pending_users.json
 
 .DS_store
 

@@ -2,7 +2,7 @@ const {
   loadRegisteredUsers,
   senderName,
   isRegistered,
-} = require("./helpers/utils");
+} = require("../helpers/utils");
 
 async function handleText(ctx) {
   /* Pin message */
