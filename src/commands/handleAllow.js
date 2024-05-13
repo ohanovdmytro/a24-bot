@@ -1,6 +1,6 @@
 const {
-  loadRegisteredUsers,
-  loadPendingUsers,
+  getRegisteredUsers,
+  getPendingUsers,
 
   savePendingUser,
   isRegistered,
@@ -12,8 +12,8 @@ const adminId = process.env.ADMIN_ID;
 async function handleAllow(ctx) {
   try {
     const senderId = ctx.message.from?.id;
-    const pendingUsers = loadPendingUsers();
-    const registeredUsers = loadRegisteredUsers();
+    const pendingUsers = getPendingUsers();
+    const registeredUsers = getRegisteredUsers();
 
     /* Get pendingsUserId and new name from command */
     const [stringUserId, pendingUserName] = ctx.match.split(",");

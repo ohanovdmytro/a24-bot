@@ -3,6 +3,10 @@ storage/names.json
 storage/registered_users.json
 storage/pending_users.json
 
+registered_users.json
+credentials.json
+
+
 .DS_store
 
 # Logs

@@ -1,7 +1,9 @@
 const {
-  loadRegisteredUsers,
+  getRegisteredUsers,
   senderName,
   isRegistered,
+  isMissedOrder,
+  getHelperFromSheet,
 } = require("../helpers/utils");
 
 async function handleText(ctx) {
@@ -41,37 +43,67 @@ async function handleText(ctx) {
   const messageText = ctx.message.text;
 
   try {
-    const registeredUsers = await loadRegisteredUsers();
+    const registeredUsers = await getRegisteredUsers();
 
     /* Check if sender is registered */
     if (isRegistered(registeredUsers, senderId)) {
       const senderNameHeader = senderName(registeredUsers, senderId);
 
-      /* Iterate through all users */
-      registeredUsers.map(async (user) => {
-        if (user.userId !== senderId) {
-          /* Send sender message */
-          await ctx.api.sendMessage(
-            user.userId,
-            `<b>${senderNameHeader}</b>:\n${messageText}`,
-            { parse_mode: "HTML" }
-          );
-        }
-      });
+      /* Check if message is a missed order */
+      const [isMissed, orderLink] = isMissedOrder(messageText);
+      if (isMissed) {
+        const helperName = await getHelperFromSheet(orderLink);
 
-      /* Logger */
-      console.log(
-        `${new Date()} -- User ${
-          user.userId
-        } sent a new message: ${messageText}`
-      );
+        if (helperName) {
+          /* Iterate through all users */
+          registeredUsers.map(async (user) => {
+            if (user.name === helperName) {
+              /* Send sender message */
+              await ctx.api.sendMessage(
+                user.userId,
+                `<b>📝 У Вас непрочитанное сообщение по заказу:\n${orderLink}</b>`,
+                { parse_mode: "HTML" }
+              );
+            }
+          });
+        } else {
+          /* Iterate through all users */
+          registeredUsers.map(async (user) => {
+            if (user.userId !== senderId) {
+              /* Send sender message */
+              await ctx.api.sendMessage(
+                user.userId,
+                `<b>❗️ Новое сообщение по заказу:\n${orderLink}\n\nЗанесите номер заказа в таблицу!</b>`,
+                { parse_mode: "HTML" }
+              );
+            }
+          });
+        }
+      } else {
+        /* Iterate through all users */
+        registeredUsers.map(async (user) => {
+          if (user.userId !== senderId) {
+            /* Send sender message */
+            await ctx.api.sendMessage(
+              user.userId,
+              `<b>${senderNameHeader}</b>:\n${messageText}`,
+              { parse_mode: "HTML" }
+            );
+          }
+        });
+
+        /* Logger */
+        console.log(
+          `${new Date()} -- User ${senderId} sent a new message: ${messageText}`
+        );
+      }
     } else {
       await ctx.reply(
         "Вы не зарегистрированы. Отправьте /start, чтобы зарегистрироваться."
       );
     }
   } catch (error) {
-    console.error("Error sending message: ", error.message);
+    console.error("Error sending message: ", error);
   }
 }
 

@@ -1,5 +1,5 @@
 const {
-  loadRegisteredUsers,
+  getRegisteredUsers,
   senderName,
   isRegistered,
 } = require("../helpers/utils");
@@ -9,7 +9,7 @@ async function handlePhoto(ctx) {
   if (typeof ctx.message.pinned_message === "object") {
     const senderId = ctx.message.from.id;
     const pinnedMessage = ctx.message.pinned_message;
-    const registeredUsers = loadRegisteredUsers();
+    const registeredUsers = getRegisteredUsers();
 
     if (isRegistered(registeredUsers, senderId)) {
       let msgIdCounter = 0;
@@ -32,7 +32,7 @@ async function handlePhoto(ctx) {
   const photoId = photo[0].file_id;
 
   try {
-    const registeredUsers = loadRegisteredUsers();
+    const registeredUsers = getRegisteredUsers();
 
     /* Check if sender is registered */
     if (isRegistered(registeredUsers, senderId)) {

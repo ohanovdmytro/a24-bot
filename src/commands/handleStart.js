@@ -1,6 +1,6 @@
 const {
-  loadRegisteredUsers,
-  loadPendingUsers,
+  getRegisteredUsers,
+  getPendingUsers,
 
   isRegistered,
   isPending,
@@ -14,8 +14,8 @@ async function handleStart(ctx) {
     const newUsername = ctx.message.from.username;
     const newFirstName = ctx.message.from.first_name;
 
-    const pendingUsers = loadPendingUsers();
-    const registeredUsers = loadRegisteredUsers();
+    const pendingUsers = getPendingUsers();
+    const registeredUsers = getRegisteredUsers();
 
     /* Check if user is  in pending or registered, otherwise - ask Viktor */
     if (
