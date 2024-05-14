@@ -27,13 +27,14 @@ async function handleStart(ctx) {
         userId: newUserId,
         username: newUsername,
         name: newFirstName,
+        tags: [],
       });
 
       /* Push user to pending users */
       saveNewUser(pendingUsers);
 
       await ctx.reply(
-        `Напишите @Viktor_Rachuk и ожидайте начала подтверждения работы`
+        `Напишіть @Viktor_Rachuk і очікуйте підтвердження початку роботи.`
       );
 
       /* Logger */
@@ -42,9 +43,9 @@ async function handleStart(ctx) {
       isPending(pendingUsers, newUserId) &&
       !isRegistered(registeredUsers, newUserId)
     ) {
-      await ctx.reply(`Доступ еще не активирован. Связь: @Viktor_Rachuk`);
+      await ctx.reply(`Доступ ще не активовано. Звʼязок: @Viktor_Rachuk`);
     } else if (isRegistered(registeredUsers, newUserId)) {
-      await ctx.reply("Вы уже зарегистрированы.");
+      await ctx.reply("Ви вже зареєстровані.");
     }
   } catch (error) {
     console.error("Error registering: ", error.message);

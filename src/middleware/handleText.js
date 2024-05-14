@@ -61,7 +61,7 @@ async function handleText(ctx) {
               /* Send sender message */
               await ctx.api.sendMessage(
                 user.userId,
-                `<b>📝 У Вас непрочитанное сообщение по заказу:\n${orderLink}</b>`,
+                `<b>📝 Автор24:\n\n${messageText}</b>`,
                 { parse_mode: "HTML" }
               );
             }
@@ -73,7 +73,7 @@ async function handleText(ctx) {
               /* Send sender message */
               await ctx.api.sendMessage(
                 user.userId,
-                `<b>❗️ Новое сообщение по заказу:\n${orderLink}\n\nЗанесите номер заказа в таблицу!</b>`,
+                `<b>📝 Автор24:\n\n❗️ Занесіть посилання на замовлення у таблицю!\n\n${messageText}</b>`,
                 { parse_mode: "HTML" }
               );
             }
@@ -99,7 +99,7 @@ async function handleText(ctx) {
       }
     } else {
       await ctx.reply(
-        "Вы не зарегистрированы. Отправьте /start, чтобы зарегистрироваться."
+        "Ви не зареєстровані. Відпарвте /start, щоб зареєструватись."
       );
     }
   } catch (error) {

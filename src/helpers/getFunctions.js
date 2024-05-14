@@ -31,13 +31,14 @@ async function getHelperFromSheet(link) {
     const client = await auth.getClient();
     const sheets = google.sheets({ version: "v4", auth: client });
 
-    const SPREADSHEET_ID = process.env.SHEET_ID;
-    const SHEET_NAME = "Table";
+    const sheetId = process.env.SHEET_ID;
+    const sheetName = "А24, травень 2024";
 
     const columnValuesResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A2:A`,
+      spreadsheetId: sheetId,
+      range: `${sheetName}!C2:C`,
     });
+
     const columnValues = columnValuesResponse.data.values.flat();
 
     const rowIndex = columnValues.findIndex((value) => value === link);
@@ -47,17 +48,58 @@ async function getHelperFromSheet(link) {
     }
 
     const helperResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!B${rowIndex + 2}:A${rowIndex + 2}`,
+      spreadsheetId: sheetId,
+      range: `${sheetName}!B${rowIndex + 2}:C${rowIndex + 2}`,
     });
     const helperData = helperResponse.data.values[0];
 
-    const helperName = helperData[1];
+    const helperName = helperData[0];
 
     return helperName;
   } catch (error) {
     console.error("Error fetching data from Google Sheets:", error);
-    return null;
+    return false;
+  }
+}
+
+async function getTagsFromSheet(userToModify) {
+  try {
+    const auth = new google.auth.GoogleAuth({
+      keyFile: "credentials.json",
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+
+    const client = await auth.getClient();
+    const sheets = google.sheets({ version: "v4", auth: client });
+
+    const sheetId = process.env.SHEET_ID;
+    const sheetName = "Теги";
+
+    const headersResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: `${sheetName}!1:1`,
+    });
+    const headers = headersResponse.data.values[0];
+
+    const columnIndex = headers.findIndex((header) => header === userToModify);
+
+    if (columnIndex === -1) {
+      console.error(`User '${userToModify}' not found in the sheet.`);
+      return [];
+    }
+
+    const columnValuesResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: `${sheetName}!${String.fromCharCode(
+        65 + columnIndex
+      )}2:${String.fromCharCode(65 + columnIndex)}`,
+    });
+    const columnValues = columnValuesResponse.data.values.flat();
+
+    return columnValues;
+  } catch (error) {
+    console.error("Error getting tags from Google Sheets:", error);
+    return [];
   }
 }
 
@@ -65,4 +107,5 @@ module.exports = {
   getRegisteredUsers,
   getPendingUsers,
   getHelperFromSheet,
+  getTagsFromSheet,
 };

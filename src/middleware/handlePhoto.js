@@ -55,7 +55,7 @@ async function handlePhoto(ctx) {
       );
     } else {
       await ctx.reply(
-        "Вы не зарегистрированы. Отправьте /start, чтобы зарегистрироваться."
+        "Ви не зареєстровані. Відправте /start, щоб зареєструватись."
       );
     }
   } catch (error) {

@@ -5,6 +5,7 @@ const {
   getRegisteredUsers,
   getPendingUsers,
   getHelperFromSheet,
+  getTagsFromSheet,
 } = require("./getFunctions.js");
 const { savePendingUser, saveNewUser } = require("./saveFunctions.js");
 
@@ -14,7 +15,7 @@ function senderName(registeredUsers, senderId) {
 }
 
 function isMissedOrder(message) {
-  const pattern = /https:\/\/a24\.biz\/order\/getoneorder\/(\d+)\sпишут/;
+  const pattern = /https:\/\/a24\.biz\/order\/getoneorder\/(\d+)/;
   const match = message.match(pattern);
 
   if (match) {
@@ -31,6 +32,7 @@ module.exports = {
   getRegisteredUsers,
   getPendingUsers,
   getHelperFromSheet,
+  getTagsFromSheet,
 
   savePendingUser,
   saveNewUser,
