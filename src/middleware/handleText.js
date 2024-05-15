@@ -2,8 +2,9 @@ const {
   getRegisteredUsers,
   senderName,
   isRegistered,
-  isMissedOrder,
+  hasOrderLink,
   getHelperFromSheet,
+  hasTags,
 } = require("../helpers/utils");
 
 async function handleText(ctx) {
@@ -49,38 +50,62 @@ async function handleText(ctx) {
     if (isRegistered(registeredUsers, senderId)) {
       const senderNameHeader = senderName(registeredUsers, senderId);
 
-      /* Check if message is a missed order */
-      const [isMissed, orderLink] = isMissedOrder(messageText);
-      if (isMissed) {
-        const helperName = await getHelperFromSheet(orderLink);
+      /* Check if message has a link order */
+      const [hasLink, orderLink] = hasOrderLink(messageText);
 
-        if (helperName) {
-          /* Iterate through all users */
+      if (hasLink) {
+        const [hasHelper, helperName] = await getHelperFromSheet(orderLink);
+        const [isTag, usersWithTags] = hasTags(messageText, registeredUsers);
+        console.log(hasHelper, isTag);
+        if (hasHelper) {
+          /* Iterate through all users - HELPER_SEND */
           registeredUsers.map(async (user) => {
             if (user.name === helperName) {
               /* Send sender message */
               await ctx.api.sendMessage(
                 user.userId,
-                `<b>📝 Автор24:\n\n${messageText}</b>`,
+                `<b>❗️ Пишуть по замовленню у роботі:\n\n${messageText}</b>`,
                 { parse_mode: "HTML" }
               );
             }
           });
+
+          /* Logger */
+          console.log(
+            `${new Date()} -- User ${senderId} sent a HELPER_MESSAGE: ${messageText}`
+          );
+        } else if (!hasHelper && isTag) {
+          /* Iterate through all users with tags -- TAGS_SEND */
+          usersWithTags.map(async (user) => {
+            if (user.userId !== senderId) {
+              /* Send sender message */
+              await ctx.api.sendMessage(
+                user.userId,
+                `<b>${senderNameHeader}:</b>\n${messageText}`,
+                { parse_mode: "HTML" }
+              );
+            }
+          });
+
+          /* Logger */
+          console.log(
+            `${new Date()} -- User ${senderId} sent a TAGS_MESSAGE: ${messageText}`
+          );
         } else {
-          /* Iterate through all users */
+          /* Iterate through all users -- HELPER_SEND_ALL */
           registeredUsers.map(async (user) => {
             if (user.userId !== senderId) {
               /* Send sender message */
               await ctx.api.sendMessage(
                 user.userId,
-                `<b>📝 Автор24:\n\n❗️ Занесіть посилання на замовлення у таблицю!\n\n${messageText}</b>`,
+                `<b>📝 Повідомлення про замовлення: </b>\n\n<b>${senderNameHeader}:</b>\n${messageText}`,
                 { parse_mode: "HTML" }
               );
             }
           });
         }
       } else {
-        /* Iterate through all users */
+        /* Iterate through all users wich has -- SEND_ALL */
         registeredUsers.map(async (user) => {
           if (user.userId !== senderId) {
             /* Send sender message */

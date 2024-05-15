@@ -1,38 +1,20 @@
 [
   {
-    "userId": 229956339,
-    "username": "Viktor_Rachuk",
-    "name": "Вітя",
+    "userId": 6908627287,
+    "username": "shparg_admin_1",
+    "name": "Шпарг1",
     "tags": []
+  },
+  {
+    "userId": 6863215344,
+    "username": "shparg_admin_2",
+    "name": "Шпарг2",
+    "tags": ["вишмат", "логика", "матан", "юрка"]
   },
   {
     "userId": 528941926,
     "username": "ohanovdmytro",
-    "name": "Розробник",
-    "tags": []
-  },
-  {
-    "userId": 5609072359,
-    "username": "shparg_admin",
-    "name": "Адмін",
-    "tags": []
-  },
-  {
-    "userId": 888775669,
-    "username": "MariaMathExpert",
-    "name": "Марія",
-    "tags": []
-  },
-  {
-    "userId": 699082055,
-    "username": "Lavanova_Marjana",
-    "name": "Марʼяна",
-    "tags": []
-  },
-  {
-    "userId": 494229391,
-    "username": "MAHALO_tg",
-    "name": "Максим",
-    "tags": []
+    "name": "Дима",
+    "tags": ["тестовое"]
   }
 ]

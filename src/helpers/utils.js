@@ -1,6 +1,11 @@
 const fs = require("fs");
 
-const { isRegistered, isPending } = require("./isFunctions.js");
+const {
+  isRegistered,
+  isPending,
+  hasOrderLink,
+  hasTags,
+} = require("./stateFunctions.js");
 const {
   getRegisteredUsers,
   getPendingUsers,
@@ -14,20 +19,6 @@ function senderName(registeredUsers, senderId) {
   return user ? user.name : "Unknown";
 }
 
-function isMissedOrder(message) {
-  const pattern = /https:\/\/a24\.biz\/order\/getoneorder\/(\d+)/;
-  const match = message.match(pattern);
-
-  if (match) {
-    const orderId = match[1];
-    const link = `https://a24.biz/order/getoneorder/${orderId}`;
-
-    return [true, link];
-  } else {
-    return [false, "empty"];
-  }
-}
-
 module.exports = {
   getRegisteredUsers,
   getPendingUsers,
@@ -39,7 +30,8 @@ module.exports = {
 
   isRegistered,
   isPending,
+  hasOrderLink,
 
   senderName,
-  isMissedOrder,
+  hasTags,
 };

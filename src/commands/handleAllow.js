@@ -34,6 +34,7 @@ async function handleAllow(ctx) {
       userId: pendingUserId,
       username: pendingUserObject.username,
       name: pendingUserName,
+      tags: [],
     });
 
     savePendingUser(registeredUsers);

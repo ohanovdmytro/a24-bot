@@ -41,24 +41,27 @@ async function getHelperFromSheet(link) {
 
     const columnValues = columnValuesResponse.data.values.flat();
 
-    const rowIndex = columnValues.findIndex((value) => value === link);
+    const rowIndex = columnValues.findIndex((value) => {
+      return value === link;
+    });
 
     if (rowIndex === -1) {
-      return false;
+      return [false, ""];
     }
 
     const helperResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
       range: `${sheetName}!B${rowIndex + 2}:C${rowIndex + 2}`,
     });
+
     const helperData = helperResponse.data.values[0];
 
     const helperName = helperData[0];
 
-    return helperName;
+    return [true, helperName];
   } catch (error) {
     console.error("Error fetching data from Google Sheets:", error);
-    return false;
+    return [false, ""];
   }
 }
 
