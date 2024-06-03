@@ -56,7 +56,6 @@ async function handleText(ctx) {
       if (hasLink) {
         const [hasHelper, helperName] = await getHelperFromSheet(orderLink);
         const [isTag, usersWithTags] = hasTags(messageText, registeredUsers);
-        console.log(hasHelper, isTag);
         if (hasHelper) {
           /* Iterate through all users - HELPER_SEND */
           registeredUsers.map(async (user) => {

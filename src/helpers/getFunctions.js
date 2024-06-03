@@ -28,37 +28,32 @@ async function getHelperFromSheet(link) {
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
-    const client = await auth.getClient();
-    const sheets = google.sheets({ version: "v4", auth: client });
+    const sheets = google.sheets({ version: "v4", auth });
 
-    const sheetId = process.env.SHEET_ID;
-    const sheetName = "А24, травень 2024";
+    const spreadsheetId = process.env.SHEET_ID;
+    const range = "Замовлення!C2:D";
 
-    const columnValuesResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: sheetId,
-      range: `${sheetName}!C2:C`,
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range,
     });
 
-    const columnValues = columnValuesResponse.data.values.flat();
+    const rows = response.data.values;
 
-    const rowIndex = columnValues.findIndex((value) => {
-      return value === link;
-    });
+    for (const row of rows) {
+      const helper = row[0];
+      const value = row[1];
 
-    if (rowIndex === -1) {
-      return [false, ""];
+      if (value === undefined || helper === undefined) {
+        continue;
+      }
+
+      if (value === link) {
+        return [true, helper];
+      }
     }
 
-    const helperResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: sheetId,
-      range: `${sheetName}!B${rowIndex + 2}:C${rowIndex + 2}`,
-    });
-
-    const helperData = helperResponse.data.values[0];
-
-    const helperName = helperData[0];
-
-    return [true, helperName];
+    return [false, ""];
   } catch (error) {
     console.error("Error fetching data from Google Sheets:", error);
     return [false, ""];

@@ -10,7 +10,7 @@ const { handlePhoto } = require("./middleware/handlePhoto");
 
 const { handleError } = require("./helpers/handleError");
 
-const bot = new Bot(process.env.A24_TEST_BOT_TOKEN);
+const bot = new Bot(process.env.A24_BOT_TOKEN);
 const adminChatId = parseInt(process.env.ADMIN_ID);
 
 /* Handle /start */
